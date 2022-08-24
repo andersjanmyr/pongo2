@@ -70,6 +70,8 @@ Please use the [issue tracker](https://github.com/flosch/pongo2/issues) if you'r
 - Additional features:
   - Macros including importing macros from other files (see [template_tests/macro.tpl](https://github.com/flosch/pongo2/blob/master/template_tests/macro.tpl))
   - [Template sandboxing](https://godoc.org/github.com/flosch/pongo2#TemplateSet) ([directory patterns](http://golang.org/pkg/path/filepath/#Match), banned tags/filters)
+  - [Configure tokens](./pongo2.go) with `SetBlockTokens`, `SetVariableTokens`
+      and `SetCommentTokens`.
 
 ## Caveats
 
