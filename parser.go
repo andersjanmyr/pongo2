@@ -216,7 +216,7 @@ func (p *Parser) WrapUntilTag(names ...string) (*NodeWrapper, *Parser, *Error) {
 
 	for p.Remaining() > 0 {
 		// New tag, check whether we have to stop wrapping here
-		if p.Peek(TokenSymbol, "{%") != nil {
+		if p.Peek(TokenSymbol, openBlockToken) != nil {
 			tagIdent := p.PeekTypeN(1, TokenIdentifier)
 
 			if tagIdent != nil {
@@ -236,7 +236,7 @@ func (p *Parser) WrapUntilTag(names ...string) (*NodeWrapper, *Parser, *Error) {
 					p.ConsumeN(2) // '{%' tagname
 
 					for {
-						if p.Match(TokenSymbol, "%}") != nil {
+						if p.Match(TokenSymbol, closeBlockToken) != nil {
 							// Okay, end the wrapping here
 							wrapper.Endtag = tagIdent.Val
 							return wrapper, newParser(p.template.name, tagArgs, p.template), nil
@@ -269,7 +269,7 @@ func (p *Parser) WrapUntilTag(names ...string) (*NodeWrapper, *Parser, *Error) {
 func (p *Parser) SkipUntilTag(names ...string) *Error {
 	for p.Remaining() > 0 {
 		// New tag, check whether we have to stop wrapping here
-		if p.Peek(TokenSymbol, "{%") != nil {
+		if p.Peek(TokenSymbol, openBlockToken) != nil {
 			tagIdent := p.PeekTypeN(1, TokenIdentifier)
 
 			if tagIdent != nil {
@@ -289,7 +289,7 @@ func (p *Parser) SkipUntilTag(names ...string) *Error {
 					p.ConsumeN(2) // '{%' tagname
 
 					for {
-						if p.Match(TokenSymbol, "%}") != nil {
+						if p.Match(TokenSymbol, closeBlockToken) != nil {
 							// Done skipping, exit.
 							return nil
 						}

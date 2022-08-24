@@ -15,14 +15,14 @@ func (p *Parser) parseDocElement() (INode, *Error) {
 		return n, nil
 	case TokenSymbol:
 		switch t.Val {
-		case "{{":
+		case openVariableToken:
 			// parse variable
 			variable, err := p.parseVariableElement()
 			if err != nil {
 				return nil, err
 			}
 			return variable, nil
-		case "{%":
+		case openBlockToken:
 			// parse tag
 			tag, err := p.parseTagElement()
 			if err != nil {

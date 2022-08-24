@@ -5,14 +5,14 @@ type tagTemplateTagNode struct {
 }
 
 var templateTagMapping = map[string]string{
-	"openblock":     "{%",
-	"closeblock":    "%}",
-	"openvariable":  "{{",
-	"closevariable": "}}",
+	"openblock":     openBlockToken,
+	"closeblock":    closeBlockToken,
+	"openvariable":  openVariableToken,
+	"closevariable": closeVariableToken,
 	"openbrace":     "{",
 	"closebrace":    "}",
-	"opencomment":   "{#",
-	"closecomment":  "#}",
+	"opencomment":   openCommentToken,
+	"closecomment":  closeCommentToken,
 }
 
 func (node *tagTemplateTagNode) Execute(ctx *ExecutionContext, writer TemplateWriter) *Error {

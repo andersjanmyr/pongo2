@@ -121,7 +121,7 @@ func (p *Parser) parseFilter() (*filterCall, *Error) {
 
 	// Check for filter-argument (2 tokens needed: ':' ARG)
 	if p.Match(TokenSymbol, ":") != nil {
-		if p.Peek(TokenSymbol, "}}") != nil {
+		if p.Peek(TokenSymbol, closeVariableToken) != nil {
 			return nil, p.Error("Filter parameter required after ':'.", nil)
 		}
 

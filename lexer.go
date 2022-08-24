@@ -33,7 +33,7 @@ var (
 		"{{-", "-}}", "{%-", "-%}",
 
 		// 2-Char symbols
-		"==", ">=", "<=", "&&", "||", "{{", "}}", "{%", "%}", "!=", "<>",
+		"==", ">=", "<=", "&&", "||", openVariableToken, closeVariableToken, openBlockToken, closeBlockToken, "!=", "<>",
 
 		// 1-Char symbol
 		"(", ")", "+", "-", "*", "<", ">", "/", "^", ",", ".", "!", "|", ":", "=", "%", "[", "]",
@@ -232,7 +232,7 @@ func (l *lexer) run() {
 			if name != "" {
 				name += " "
 			}
-			if strings.HasPrefix(l.input[l.pos:], fmt.Sprintf("{%% endverbatim %s%%}", name)) { // end verbatim
+			if strings.HasPrefix(l.input[l.pos:], fmt.Sprintf("%s endverbatim %s%s", openBlockToken, name, closeBlockToken)) { // end verbatim
 				if l.pos > l.start {
 					l.emit(TokenHTML)
 				}
@@ -242,7 +242,7 @@ func (l *lexer) run() {
 				l.ignore()
 				l.inVerbatim = false
 			}
-		} else if strings.HasPrefix(l.input[l.pos:], "{% verbatim %}") { // tag
+		} else if strings.HasPrefix(l.input[l.pos:], fmt.Sprintf("%s endverbatim %s", openBlockToken, closeBlockToken)) { // tag
 			if l.pos > l.start {
 				l.emit(TokenHTML)
 			}
@@ -255,7 +255,7 @@ func (l *lexer) run() {
 
 		if !l.inVerbatim {
 			// Ignore single-line comments {# ... #}
-			if strings.HasPrefix(l.input[l.pos:], "{#") {
+			if strings.HasPrefix(l.input[l.pos:], openCommentToken) {
 				if l.pos > l.start {
 					l.emit(TokenHTML)
 				}
@@ -273,7 +273,7 @@ func (l *lexer) run() {
 						return
 					}
 
-					if strings.HasPrefix(l.input[l.pos:], "#}") {
+					if strings.HasPrefix(l.input[l.pos:], closeCommentToken) {
 						l.pos += 2 // pass '#}'
 						l.col += 2
 						break
@@ -287,8 +287,8 @@ func (l *lexer) run() {
 				continue // next token
 			}
 
-			if strings.HasPrefix(l.input[l.pos:], "{{") || // variable
-				strings.HasPrefix(l.input[l.pos:], "{%") { // tag
+			if strings.HasPrefix(l.input[l.pos:], openVariableToken) || // variable
+				strings.HasPrefix(l.input[l.pos:], openBlockToken) { // tag
 				if l.pos > l.start {
 					l.emit(TokenHTML)
 				}
@@ -350,7 +350,7 @@ outer_loop:
 				l.col += l.length()
 				l.emit(TokenSymbol)
 
-				if sym == "%}" || sym == "-%}" || sym == "}}" || sym == "-}}" {
+				if sym == closeBlockToken || sym == "-%}" || sym == closeVariableToken || sym == "-}}" {
 					// Tag/variable end, return after emit
 					return nil
 				}

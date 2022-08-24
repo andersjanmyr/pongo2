@@ -106,13 +106,13 @@ func (tpl *Template) newContextForExecution(context Context) (*Template, *Execut
 
 		for _, t := range tpl.tokens {
 			if tpl.Options.LStripBlocks {
-				if prev.Typ == TokenHTML && t.Typ != TokenHTML && t.Val == "{%" {
+				if prev.Typ == TokenHTML && t.Typ != TokenHTML && t.Val == openBlockToken {
 					prev.Val = strings.TrimRight(prev.Val, "\t ")
 				}
 			}
 
 			if tpl.Options.TrimBlocks {
-				if prev.Typ != TokenHTML && t.Typ == TokenHTML && prev.Val == "%}" {
+				if prev.Typ != TokenHTML && t.Typ == TokenHTML && prev.Val == closeBlockToken {
 					if len(t.Val) > 0 && t.Val[0] == '\n' {
 						t.Val = t.Val[1:len(t.Val)]
 					}

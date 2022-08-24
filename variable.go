@@ -753,7 +753,7 @@ func (p *Parser) parseVariableElement() (INode, *Error) {
 	}
 	node.expr = expr
 
-	if p.Match(TokenSymbol, "}}") == nil {
+	if p.Match(TokenSymbol, closeVariableToken) == nil {
 		return nil, p.Error("'}}' expected", nil)
 	}
 

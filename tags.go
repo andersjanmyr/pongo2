@@ -105,7 +105,7 @@ func (p *Parser) parseTagElement() (INodeTag, *Error) {
 	}
 
 	var argsToken []*Token
-	for p.Peek(TokenSymbol, "%}") == nil && p.Remaining() > 0 {
+	for p.Peek(TokenSymbol, closeBlockToken) == nil && p.Remaining() > 0 {
 		// Add token to args
 		argsToken = append(argsToken, p.Current())
 		p.Consume() // next token
@@ -116,7 +116,7 @@ func (p *Parser) parseTagElement() (INodeTag, *Error) {
 		return nil, p.Error("Unexpectedly reached EOF, no tag end found.", p.lastToken)
 	}
 
-	p.Match(TokenSymbol, "%}")
+	p.Match(TokenSymbol, closeBlockToken)
 
 	argParser := newParser(p.name, argsToken, p.template)
 	if len(argsToken) == 0 {
