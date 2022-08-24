@@ -227,27 +227,29 @@ func (l *lexer) run() {
 	for {
 		// TODO: Support verbatim tag names
 		// https://docs.djangoproject.com/en/dev/ref/templates/builtins/#verbatim
+		verbatim := fmt.Sprintf("%s verbatim %s", openBlockToken, closeBlockToken)
 		if l.inVerbatim {
 			name := l.verbatimName
 			if name != "" {
 				name += " "
 			}
-			if strings.HasPrefix(l.input[l.pos:], fmt.Sprintf("%s endverbatim %s%s", openBlockToken, name, closeBlockToken)) { // end verbatim
+			endVerbatim := fmt.Sprintf("%s endverbatim %s%s", openBlockToken, name, closeBlockToken)
+			if strings.HasPrefix(l.input[l.pos:], endVerbatim) { // end verbatim
 				if l.pos > l.start {
 					l.emit(TokenHTML)
 				}
-				w := len("{% endverbatim %}")
+				w := len(endVerbatim)
 				l.pos += w
 				l.col += w
 				l.ignore()
 				l.inVerbatim = false
 			}
-		} else if strings.HasPrefix(l.input[l.pos:], fmt.Sprintf("%s endverbatim %s", openBlockToken, closeBlockToken)) { // tag
+		} else if strings.HasPrefix(l.input[l.pos:], verbatim) { // tag
 			if l.pos > l.start {
 				l.emit(TokenHTML)
 			}
 			l.inVerbatim = true
-			w := len("{% verbatim %}")
+			w := len(verbatim)
 			l.pos += w
 			l.col += w
 			l.ignore()
@@ -260,8 +262,9 @@ func (l *lexer) run() {
 					l.emit(TokenHTML)
 				}
 
-				l.pos += 2 // pass '{#'
-				l.col += 2
+				w := len(openCommentToken)
+				l.pos += w // pass '{#'
+				l.col += w
 
 				for {
 					switch l.peek() {
@@ -274,8 +277,9 @@ func (l *lexer) run() {
 					}
 
 					if strings.HasPrefix(l.input[l.pos:], closeCommentToken) {
-						l.pos += 2 // pass '#}'
-						l.col += 2
+						w := len(closeCommentToken)
+						l.pos += w // pass '#}'
+						l.col += w
 						break
 					}
 
